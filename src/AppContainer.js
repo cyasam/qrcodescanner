@@ -1,21 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  View,
-  BackHandler,
-  Vibration,
-  ToastAndroid,
-} from 'react-native';
+import {StyleSheet, View, Vibration} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import KeepAwake from 'react-native-keep-awake';
 
 import CodeResult from './components/CodeResult';
+import PendingView from './components/PendingView';
 import AppContext from './context/AppContext';
 
 const AppContainer = () => {
   const config = {
-    zoom: 0.2,
+    zoom: 0,
     animatedLineHeight: 2,
     barcodeMask: {
       width: 200,
@@ -62,6 +57,7 @@ const AppContainer = () => {
   return (
     <AppContext.Provider
       value={{
+        cameraRef,
         barcodeData,
         handleBackPress,
       }}>
@@ -78,12 +74,7 @@ const AppContainer = () => {
           androidCameraPermissionOptions={null}>
           {({status}) => {
             if (status === 'NOT_AUTHORIZED') {
-              BackHandler.exitApp();
-              ToastAndroid.showWithGravity(
-                config.permissionErrorMessage,
-                ToastAndroid.SHORT,
-                ToastAndroid.CENTER,
-              );
+              return <PendingView text={config.permissionErrorMessage} />;
             }
 
             return (
