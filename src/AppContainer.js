@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, BackHandler, Vibration} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  BackHandler,
+  Vibration,
+  ToastAndroid,
+} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import KeepAwake from 'react-native-keep-awake';
@@ -16,6 +22,8 @@ const AppContainer = () => {
       height: 200,
     },
     vibrationDuration: 500,
+    permissionErrorMessage:
+      "Scanner doesn't have the permissions required. Go to Settings and check permissions.",
   };
 
   const [animatedLineHeight, setAnimatedLineHeight] = useState(
@@ -71,6 +79,11 @@ const AppContainer = () => {
           {({status}) => {
             if (status === 'NOT_AUTHORIZED') {
               BackHandler.exitApp();
+              ToastAndroid.showWithGravity(
+                config.permissionErrorMessage,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+              );
             }
 
             return (
