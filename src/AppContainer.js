@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, BackHandler, Vibration} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import KeepAwake from 'react-native-keep-awake';
@@ -15,6 +15,7 @@ const AppContainer = () => {
       width: 200,
       height: 200,
     },
+    vibrationDuration: 500,
   };
 
   const [animatedLineHeight, setAnimatedLineHeight] = useState(
@@ -22,6 +23,7 @@ const AppContainer = () => {
   );
   const [cameraRef, setCameraRef] = useState(null);
   const [barcodeData, setBarcodeData] = useState(null);
+
   const onBarCodeRead = barcode => {
     if (!barcodeData) {
       setBarcodeData(barcode);
@@ -40,12 +42,14 @@ const AppContainer = () => {
     if (barcodeData && cameraRef) {
       cameraRef.pausePreview();
       setAnimatedLineHeight(0);
+
+      Vibration.vibrate(config.vibrationDuration);
     }
 
     return () => {
       KeepAwake.deactivate();
     };
-  }, [barcodeData, cameraRef]);
+  }, [barcodeData, cameraRef, config.vibrationDuration]);
 
   return (
     <AppContext.Provider
@@ -60,13 +64,23 @@ const AppContainer = () => {
           }}
           style={styles.camera}
           zoom={config.zoom}
+          captureAudio={false}
           onBarCodeRead={onBarCodeRead}
-          barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}>
-          <BarcodeMask
-            width={config.barcodeMask.width}
-            height={config.barcodeMask.height}
-            animatedLineHeight={animatedLineHeight}
-          />
+          barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
+          androidCameraPermissionOptions={null}>
+          {({status}) => {
+            if (status === 'NOT_AUTHORIZED') {
+              BackHandler.exitApp();
+            }
+
+            return (
+              <BarcodeMask
+                width={config.barcodeMask.width}
+                height={config.barcodeMask.height}
+                animatedLineHeight={animatedLineHeight}
+              />
+            );
+          }}
         </RNCamera>
         {barcodeData && <CodeResult />}
       </View>
@@ -83,6 +97,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pendingView: {
+    margin: 20,
   },
 });
 
