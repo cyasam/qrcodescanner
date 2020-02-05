@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Vibration} from 'react-native';
+import {StyleSheet, View, Vibration, Dimensions} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import KeepAwake from 'react-native-keep-awake';
@@ -8,17 +8,33 @@ import CodeResult from './components/CodeResult';
 import PendingView from './components/PendingView';
 import AppContext from './context/AppContext';
 
+const isInside = (obj1, obj2) =>
+  obj2.x >= obj1.x &&
+  obj2.x + obj2.width <= obj1.x + obj1.width &&
+  obj2.y >= obj1.y &&
+  obj2.y + obj2.height <= obj1.y + obj1.height;
+
 const AppContainer = () => {
   const config = {
-    zoom: 0,
+    zoom: 0.2,
     animatedLineHeight: 2,
     barcodeMask: {
-      width: 200,
-      height: 200,
+      width: 230,
+      height: 230,
+      edgeColor: '#4285F4',
+      edgeBorderWidth: 2,
     },
-    vibrationDuration: 500,
+    vibrationDuration: 300,
     permissionErrorMessage:
       "Scanner doesn't have the permissions required. Go to Settings and check permissions.",
+  };
+
+  const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
+  const viewFinderBounds = {
+    width: config.barcodeMask.width,
+    height: config.barcodeMask.height,
+    x: (windowWidth - config.barcodeMask.width) / 2,
+    y: (windowHeight - config.barcodeMask.height) / 2,
   };
 
   const [animatedLineHeight, setAnimatedLineHeight] = useState(
@@ -27,9 +43,18 @@ const AppContainer = () => {
   const [cameraRef, setCameraRef] = useState(null);
   const [barcodeData, setBarcodeData] = useState(null);
 
-  const onBarCodeRead = barcode => {
-    if (!barcodeData) {
-      setBarcodeData(barcode);
+  const onBarCodeRead = ({barcodes}) => {
+    const readedBarcode = barcodes.find(barcode =>
+      isInside(viewFinderBounds, {
+        height: barcode.bounds.size.height,
+        width: barcode.bounds.size.width,
+        x: barcode.bounds.origin.x,
+        y: barcode.bounds.origin.y,
+      }),
+    );
+
+    if (readedBarcode) {
+      setBarcodeData(readedBarcode);
     }
   };
 
@@ -39,9 +64,9 @@ const AppContainer = () => {
     setAnimatedLineHeight(config.animatedLineHeight);
   };
 
-  KeepAwake.activate();
-
   useEffect(() => {
+    KeepAwake.activate();
+
     if (barcodeData && cameraRef) {
       cameraRef.pausePreview();
       setAnimatedLineHeight(0);
@@ -69,7 +94,7 @@ const AppContainer = () => {
           style={styles.camera}
           zoom={config.zoom}
           captureAudio={false}
-          onBarCodeRead={onBarCodeRead}
+          onGoogleVisionBarcodesDetected={onBarCodeRead}
           barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
           androidCameraPermissionOptions={null}>
           {({status}) => {
@@ -81,6 +106,8 @@ const AppContainer = () => {
               <BarcodeMask
                 width={config.barcodeMask.width}
                 height={config.barcodeMask.height}
+                edgeColor={config.barcodeMask.edgeColor}
+                edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
                 animatedLineHeight={animatedLineHeight}
               />
             );
