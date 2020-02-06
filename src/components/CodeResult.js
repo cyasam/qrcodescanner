@@ -13,7 +13,7 @@ import Autolink from 'react-native-autolink';
 
 import AppContext from '../context/AppContext';
 
-const CodeResult = () => {
+const CodeResult = ({style}) => {
   const [fadeAnim] = useState(new Animated.Value(0));
   const [translateYAnim] = useState(new Animated.Value(10));
   const {barcodeData, handleBackPress} = useContext(AppContext);
@@ -52,7 +52,7 @@ const CodeResult = () => {
         opacity: fadeAnim,
         translateY: translateYAnim,
       }}>
-      <View style={styles.container}>
+      <View style={{...styles.container, ...style}}>
         <Text style={styles.heading}>Result</Text>
         <Text style={styles.text}>
           {validator.isURL(data) || data.includes('tel:') ? (
@@ -70,12 +70,6 @@ const CodeResult = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    flex: 1,
-    margin: 20,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',

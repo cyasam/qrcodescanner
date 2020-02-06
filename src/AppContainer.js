@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Vibration, Dimensions} from 'react-native';
+import {StyleSheet, View, Vibration, Dimensions, Platform} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import KeepAwake from 'react-native-keep-awake';
 
 import CodeResult from './components/CodeResult';
 import PendingView from './components/PendingView';
+import NewReadButton from './components/NewReadButton';
 import AppContext from './context/AppContext';
 
 const isInside = (obj1, obj2) =>
@@ -14,9 +15,16 @@ const isInside = (obj1, obj2) =>
   obj2.y >= obj1.y &&
   obj2.y + obj2.height <= obj1.y + obj1.height;
 
+const createBarcodeBoundsData = bounds => ({
+  height: parseFloat(bounds.size.height),
+  width: parseFloat(bounds.size.width),
+  x: parseFloat(bounds.origin.x),
+  y: parseFloat(bounds.origin.y),
+});
+
 const AppContainer = () => {
   const config = {
-    zoom: 0.2,
+    zoom: 0,
     animatedLineHeight: 2,
     barcodeMask: {
       width: 230,
@@ -43,15 +51,31 @@ const AppContainer = () => {
   const [cameraRef, setCameraRef] = useState(null);
   const [barcodeData, setBarcodeData] = useState(null);
 
-  const onBarCodeRead = ({barcodes}) => {
-    const readedBarcode = barcodes.find(barcode =>
-      isInside(viewFinderBounds, {
-        height: barcode.bounds.size.height,
-        width: barcode.bounds.size.width,
-        x: barcode.bounds.origin.x,
-        y: barcode.bounds.origin.y,
-      }),
+  const onBarCodeRead = barcode => {
+    if (barcodeData) {
+      return false;
+    }
+
+    const {bounds} = barcode;
+    const barcodeInside = isInside(
+      viewFinderBounds,
+      createBarcodeBoundsData(bounds),
     );
+
+    if (barcodeInside) {
+      setBarcodeData(barcode);
+    }
+  };
+
+  const onGoogleVisionBarcodesDetected = ({barcodes}) => {
+    if (barcodeData) {
+      return false;
+    }
+
+    const readedBarcode = barcodes.find(barcode => {
+      const {bounds} = barcode;
+      return isInside(viewFinderBounds, createBarcodeBoundsData(bounds));
+    });
 
     if (readedBarcode) {
       setBarcodeData(readedBarcode);
@@ -62,6 +86,10 @@ const AppContainer = () => {
     setBarcodeData(null);
     cameraRef.resumePreview();
     setAnimatedLineHeight(config.animatedLineHeight);
+  };
+
+  const onPressNewReadButton = () => {
+    handleBackPress();
   };
 
   useEffect(() => {
@@ -79,6 +107,14 @@ const AppContainer = () => {
     };
   }, [barcodeData, cameraRef, config.vibrationDuration]);
 
+  const barcodeReadProps = {};
+
+  if (Platform.OS === 'ios') {
+    barcodeReadProps.onBarCodeRead = onBarCodeRead;
+  } else {
+    barcodeReadProps.onGoogleVisionBarcodesDetected = onGoogleVisionBarcodesDetected;
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -94,7 +130,7 @@ const AppContainer = () => {
           style={styles.camera}
           zoom={config.zoom}
           captureAudio={false}
-          onGoogleVisionBarcodesDetected={onBarCodeRead}
+          {...barcodeReadProps}
           barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
           androidCameraPermissionOptions={null}>
           {({status}) => {
@@ -113,7 +149,15 @@ const AppContainer = () => {
             );
           }}
         </RNCamera>
-        {barcodeData && <CodeResult />}
+        {barcodeData && (
+          <>
+            <NewReadButton
+              style={styles.newReadButton}
+              onPress={onPressNewReadButton}
+            />
+            <CodeResult style={styles.codeResult} />
+          </>
+        )}
       </View>
     </AppContext.Provider>
   );
@@ -132,6 +176,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pendingView: {
+    margin: 20,
+  },
+  newReadButton: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    margin: 20,
+  },
+  codeResult: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
     margin: 20,
   },
 });
