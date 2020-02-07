@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Platform} from 'react-native';
 import AppContext from '../context/AppContext';
 
 const PendingView = ({text}) => {
@@ -11,12 +11,14 @@ const PendingView = ({text}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{text}</Text>
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={onPressPermissions}>
-        <Text style={styles.buttonText}>Refresh Permissions</Text>
-      </TouchableOpacity>
+      {Platform.OS === 'android' && (
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={onPressPermissions}>
+          <Text style={styles.buttonText}>Refresh Permissions</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
