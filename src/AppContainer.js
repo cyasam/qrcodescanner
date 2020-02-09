@@ -22,9 +22,13 @@ const createBarcodeBoundsData = bounds => ({
   y: parseFloat(bounds.origin.y),
 });
 
+const setZoom = zoom => {
+  return Platform.OS === 'ios' ? zoom / 30 : zoom;
+};
+
 const AppContainer = () => {
   const config = {
-    zoom: 0,
+    zoom: setZoom(0.2),
     animatedLineHeight: 2,
     barcodeMask: {
       width: 230,

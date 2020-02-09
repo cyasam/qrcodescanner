@@ -194,7 +194,6 @@
 				DDB5FB514F791241106D5BBE /* Pods-qrcodescannerTests.debug.xcconfig */,
 				1536BD8DA2C70B97C4D8DD67 /* Pods-qrcodescannerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -644,6 +643,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.gorilla.qrcodescanner;
 				PRODUCT_NAME = qrcodescanner;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -664,6 +664,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.gorilla.qrcodescanner;
 				PRODUCT_NAME = qrcodescanner;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
