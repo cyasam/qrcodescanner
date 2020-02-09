@@ -1,9 +1,12 @@
 import React from 'react';
 
 const AppContext = React.createContext({
+  config: null,
   cameraRef: null,
   barcodeData: null,
-  setBarcodeData: () => {},
+  handleReadNewQRCode: () => {},
+  handleSetCameraRef: () => {},
+  handleSetBarcodeData: () => {},
 });
 
 export default AppContext;

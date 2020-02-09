@@ -3,9 +3,9 @@ import {
   StyleSheet,
   View,
   Text,
-  BackHandler,
   Linking,
   Animated,
+  BackHandler,
 } from 'react-native';
 
 import validator from 'validator';
@@ -16,14 +16,17 @@ import AppContext from '../context/AppContext';
 const CodeResult = ({style}) => {
   const [fadeAnim] = useState(new Animated.Value(0));
   const [translateYAnim] = useState(new Animated.Value(10));
-  const {barcodeData, handleBackPress} = useContext(AppContext);
+  const {barcodeData, handleReadNewQRCode} = useContext(AppContext);
   const {data} = barcodeData;
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
     function() {
-      handleBackPress();
-      return true;
+      if (barcodeData) {
+        handleReadNewQRCode();
+        return true;
+      }
+      return false;
     },
   );
 
@@ -38,13 +41,9 @@ const CodeResult = ({style}) => {
         duration: 400,
       }),
     ]).start();
-  }, [fadeAnim, translateYAnim]);
 
-  useEffect(() => {
-    return () => {
-      backHandler.remove();
-    };
-  }, [backHandler]);
+    return () => backHandler.remove();
+  }, [fadeAnim, translateYAnim, backHandler]);
 
   return (
     <Animated.View
