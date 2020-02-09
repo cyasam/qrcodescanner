@@ -27,10 +27,14 @@ const AppContainer = () => {
 
   const [cameraRef, setCameraRef] = useState(null);
   const [barcodeData, setBarcodeData] = useState(null);
+  const [animatedLineHeight, setAnimatedLineHeight] = useState(
+    config.animatedLineHeight,
+  );
 
   const handleReadNewQRCode = () => {
     setBarcodeData(null);
     cameraRef.resumePreview();
+    setAnimatedLineHeight(config.animatedLineHeight);
   };
 
   useEffect(() => {
@@ -47,9 +51,11 @@ const AppContainer = () => {
         config,
         cameraRef,
         barcodeData,
+        animatedLineHeight,
         handleReadNewQRCode,
         handleSetCameraRef: ref => setCameraRef(ref),
         handleSetBarcodeData: barcode => setBarcodeData(barcode),
+        handleSetAnimatedLineHeight: height => setAnimatedLineHeight(height),
       }}>
       <View style={styles.sectionContainer}>
         <Camera />
@@ -62,14 +68,15 @@ const AppContainer = () => {
 const styles = StyleSheet.create({
   sectionContainer: {
     flex: 1,
-    width: '100%',
   },
   codeResult: {
     position: 'absolute',
+    top: 0,
     left: 0,
     bottom: 0,
     right: 0,
     margin: 20,
+    zIndex: 10,
   },
 });
 

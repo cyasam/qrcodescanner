@@ -1,16 +1,17 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
-  View,
   Text,
   Linking,
   Animated,
   BackHandler,
+  View,
 } from 'react-native';
 
 import validator from 'validator';
 import Autolink from 'react-native-autolink';
 
+import NewReadButton from './NewReadButton';
 import AppContext from '../context/AppContext';
 
 const CodeResult = ({style}) => {
@@ -48,45 +49,61 @@ const CodeResult = ({style}) => {
   return (
     <Animated.View
       style={{
+        ...styles.container,
+        ...style,
         opacity: fadeAnim,
         translateY: translateYAnim,
       }}>
-      <View style={{...styles.container, ...style}}>
+      <View style={styles.containerInner}>
         <Text style={styles.heading}>Result</Text>
-        <Text style={styles.text}>
-          {validator.isURL(data) || data.includes('tel:') ? (
-            <Text style={styles.link} onPress={() => Linking.openURL(data)}>
-              {data}
-            </Text>
-          ) : (
-            <Autolink text={data} />
-          )}
-        </Text>
+        <View style={styles.content}>
+          <Text style={styles.text}>
+            {validator.isURL(data) || data.includes('tel:') ? (
+              <Text style={styles.link} onPress={() => Linking.openURL(data)}>
+                {data}
+              </Text>
+            ) : (
+              <Autolink text={data} />
+            )}
+          </Text>
+        </View>
       </View>
+      <NewReadButton
+        style={styles.newReadButton}
+        onPress={handleReadNewQRCode}
+      />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 5,
-    padding: 20,
+    padding: 16,
+  },
+  containerInner: {
+    flex: 1,
+    alignItems: 'center',
   },
   heading: {
-    marginBottom: 14,
+    marginBottom: 30,
     color: '#000',
-    fontSize: 20,
+    fontWeight: 'bold',
+    fontSize: 28,
+  },
+  content: {
+    flex: 1,
   },
   text: {
     color: '#000',
-    fontSize: 16,
+    fontSize: 17,
   },
   link: {
     color: '#4285F4',
   },
+  newReadButton: {},
 });
 
 export default CodeResult;

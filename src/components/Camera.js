@@ -1,10 +1,9 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {StyleSheet, Dimensions, Platform, Vibration} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 
 import PendingView from './PendingView';
-import NewReadButton from './NewReadButton';
 import AppContext from '../context/AppContext';
 
 const isInside = (obj1, obj2) =>
@@ -25,14 +24,11 @@ const Camera = () => {
     config,
     barcodeData,
     cameraRef,
-    handleReadNewQRCode,
+    animatedLineHeight,
     handleSetCameraRef,
     handleSetBarcodeData,
+    handleSetAnimatedLineHeight,
   } = useContext(AppContext);
-
-  const [animatedLineHeight, setAnimatedLineHeight] = useState(
-    config.animatedLineHeight,
-  );
 
   const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
   const viewFinderBounds = {
@@ -73,19 +69,19 @@ const Camera = () => {
     }
   };
 
-  const readNewQRCode = () => {
-    handleReadNewQRCode();
-    setAnimatedLineHeight(config.animatedLineHeight);
-  };
-
   useEffect(() => {
     if (barcodeData && cameraRef) {
       cameraRef.pausePreview();
-      setAnimatedLineHeight(0);
+      handleSetAnimatedLineHeight(0);
 
       Vibration.vibrate(config.vibrationDuration);
     }
-  }, [barcodeData, cameraRef, config.vibrationDuration]);
+  }, [
+    barcodeData,
+    cameraRef,
+    config.vibrationDuration,
+    handleSetAnimatedLineHeight,
+  ]);
 
   const barcodeReadProps = {};
 
@@ -122,11 +118,7 @@ const Camera = () => {
           );
         }}
       </RNCamera>
-      {barcodeData && (
-        <>
-          <NewReadButton style={styles.newReadButton} onPress={readNewQRCode} />
-        </>
-      )}
+      {barcodeData && <></>}
     </>
   );
 };
@@ -134,17 +126,6 @@ const Camera = () => {
 const styles = StyleSheet.create({
   camera: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  newReadButton: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    margin: 20,
   },
 });
 
