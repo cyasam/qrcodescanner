@@ -91,41 +91,39 @@ const Camera = () => {
     barcodeReadProps.onGoogleVisionBarcodesDetected = onGoogleVisionBarcodesDetected;
   }
   return (
-    <>
-      <RNCamera
-        ref={ref => {
-          handleSetCameraRef(ref);
-        }}
-        style={styles.camera}
-        zoom={config.zoom}
-        captureAudio={false}
-        {...barcodeReadProps}
-        barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
-        androidCameraPermissionOptions={null}>
-        {({status}) => {
-          if (status === 'NOT_AUTHORIZED') {
-            return <PendingView text={config.permissionErrorMessage} />;
-          }
+    <RNCamera
+      ref={ref => {
+        handleSetCameraRef(ref);
+      }}
+      style={styles.camera}
+      zoom={config.zoom}
+      captureAudio={false}
+      {...barcodeReadProps}
+      barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
+      androidCameraPermissionOptions={null}>
+      {({status}) => {
+        if (status === 'NOT_AUTHORIZED') {
+          return <PendingView text={config.permissionErrorMessage} />;
+        }
 
-          return (
-            <BarcodeMask
-              width={config.barcodeMask.width}
-              height={config.barcodeMask.height}
-              edgeColor={config.barcodeMask.edgeColor}
-              edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
-              animatedLineHeight={animatedLineHeight}
-            />
-          );
-        }}
-      </RNCamera>
-      {barcodeData && <></>}
-    </>
+        return (
+          <BarcodeMask
+            width={config.barcodeMask.width}
+            height={config.barcodeMask.height}
+            edgeColor={config.barcodeMask.edgeColor}
+            edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
+            animatedLineHeight={animatedLineHeight}
+          />
+        );
+      }}
+    </RNCamera>
   );
 };
 
 const styles = StyleSheet.create({
   camera: {
     flex: 1,
+    justifyContent: 'center',
   },
 });
 
