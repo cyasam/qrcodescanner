@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import Svg, {G, Path} from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 
 import AppContext from '../context/AppContext';
 
