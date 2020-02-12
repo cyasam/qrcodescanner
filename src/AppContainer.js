@@ -15,14 +15,14 @@ const AppContainer = () => {
     zoom: setZoom(0.2),
     flash: {
       mode: false,
-      defaultColor: 'transparent',
-      activeColor: '#fff',
+      defaultColor: '#fff',
+      activeColor: '#000',
     },
-    animatedLineHeight: 2,
+    animatedLineHeight: 1,
     barcodeMask: {
       width: 230,
       height: 230,
-      edgeColor: '#4285F4',
+      edgeColor: '#fff',
       edgeBorderWidth: 2,
     },
     vibrationDuration: 300,

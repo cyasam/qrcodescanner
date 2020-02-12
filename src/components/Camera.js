@@ -102,7 +102,11 @@ const Camera = ({style}) => {
     barcodeReadProps.onGoogleVisionBarcodesDetected = onGoogleVisionBarcodesDetected;
   }
 
-  const infoBoxPositionTop = (windowHeight + config.barcodeMask.height) / 2;
+  const flashButtonSize = 24;
+  const infoBoxPositionTop =
+    (windowHeight - config.barcodeMask.height) / 2 - flashButtonSize * 2.4;
+  const flashButtonPositionTop = (windowHeight + config.barcodeMask.height) / 2;
+
   return (
     <View style={style}>
       <RNCamera
@@ -138,7 +142,10 @@ const Camera = ({style}) => {
                 </Text>
               </View>
 
-              <FlashButton size={24} style={styles.flashButton} />
+              <FlashButton
+                size={flashButtonSize}
+                style={[styles.flashButton, {top: flashButtonPositionTop}]}
+              />
             </>
           );
         }}
@@ -164,8 +171,8 @@ const styles = StyleSheet.create({
   },
   flashButton: {
     position: 'absolute',
-    top: 15,
-    left: 15,
+    bottom: 0,
+    left: 0,
   },
 });
 
