@@ -13,6 +13,11 @@ const setZoom = zoom => {
 const AppContainer = () => {
   const config = {
     zoom: setZoom(0.2),
+    flash: {
+      mode: false,
+      defaultColor: 'transparent',
+      activeColor: '#fff',
+    },
     animatedLineHeight: 2,
     barcodeMask: {
       width: 230,
@@ -27,6 +32,7 @@ const AppContainer = () => {
 
   const [cameraRef, setCameraRef] = useState(null);
   const [barcodeData, setBarcodeData] = useState(null);
+  const [flashMode, setFlashMode] = useState(config.flash.mode);
   const [animatedLineHeight, setAnimatedLineHeight] = useState(
     config.animatedLineHeight,
   );
@@ -35,6 +41,10 @@ const AppContainer = () => {
     setBarcodeData(null);
     cameraRef.resumePreview();
     setAnimatedLineHeight(config.animatedLineHeight);
+  };
+
+  const handleSetFlashMode = () => {
+    setFlashMode(!flashMode);
   };
 
   useEffect(() => {
@@ -51,11 +61,13 @@ const AppContainer = () => {
         config,
         cameraRef,
         barcodeData,
+        flashMode,
         animatedLineHeight,
         handleReadNewQRCode,
         handleSetCameraRef: ref => setCameraRef(ref),
         handleSetBarcodeData: barcode => setBarcodeData(barcode),
         handleSetAnimatedLineHeight: height => setAnimatedLineHeight(height),
+        handleSetFlashMode,
       }}>
       <View style={styles.sectionContainer}>
         <Camera />

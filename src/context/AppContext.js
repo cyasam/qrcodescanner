@@ -5,10 +5,12 @@ const AppContext = React.createContext({
   cameraRef: null,
   barcodeData: null,
   animatedLineHeight: null,
+  flashMode: null,
   handleReadNewQRCode: () => {},
   handleSetCameraRef: () => {},
   handleSetBarcodeData: () => {},
   handleSetAnimatedLineHeight: () => {},
+  handleSetFlashMode: () => {},
 });
 
 export default AppContext;

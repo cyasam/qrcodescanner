@@ -18,6 +18,7 @@
     "react-native-barcode-mask": "^1.1.0",
     "react-native-camera": "^3.16.0",
     "react-native-keep-awake": "^4.0.0",
+    "react-native-svg": "^11.0.1",
     "validator": "^12.2.0"
   },
   "devDependencies": {

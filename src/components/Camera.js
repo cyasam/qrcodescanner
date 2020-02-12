@@ -4,6 +4,7 @@ import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 
 import PendingView from './PendingView';
+import FlashButton from './FlashButton';
 import AppContext from '../context/AppContext';
 
 const isInside = (obj1, obj2) =>
@@ -24,11 +25,14 @@ const Camera = () => {
     config,
     barcodeData,
     cameraRef,
+    flashMode,
     animatedLineHeight,
     handleSetCameraRef,
     handleSetBarcodeData,
     handleSetAnimatedLineHeight,
   } = useContext(AppContext);
+
+  const {FlashMode, BarCodeType} = RNCamera.Constants;
 
   const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
   const viewFinderBounds = {
@@ -97,9 +101,10 @@ const Camera = () => {
       }}
       style={styles.camera}
       zoom={config.zoom}
+      flashMode={flashMode ? FlashMode.torch : FlashMode.off}
       captureAudio={false}
       {...barcodeReadProps}
-      barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
+      barCodeTypes={[BarCodeType.qr]}
       androidCameraPermissionOptions={null}>
       {({status}) => {
         if (status === 'NOT_AUTHORIZED') {
@@ -107,13 +112,16 @@ const Camera = () => {
         }
 
         return (
-          <BarcodeMask
-            width={config.barcodeMask.width}
-            height={config.barcodeMask.height}
-            edgeColor={config.barcodeMask.edgeColor}
-            edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
-            animatedLineHeight={animatedLineHeight}
-          />
+          <>
+            <BarcodeMask
+              width={config.barcodeMask.width}
+              height={config.barcodeMask.height}
+              edgeColor={config.barcodeMask.edgeColor}
+              edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
+              animatedLineHeight={animatedLineHeight}
+            />
+            <FlashButton size={24} style={styles.flashButton} />
+          </>
         );
       }}
     </RNCamera>
@@ -124,6 +132,11 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
     justifyContent: 'center',
+  },
+  flashButton: {
+    position: 'absolute',
+    top: 15,
+    left: 15,
   },
 });
 
