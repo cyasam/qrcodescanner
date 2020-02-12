@@ -65,7 +65,13 @@ const AppContainer = () => {
         animatedLineHeight,
         handleReadNewQRCode,
         handleSetCameraRef: ref => setCameraRef(ref),
-        handleSetBarcodeData: barcode => setBarcodeData(barcode),
+        handleSetBarcodeData: barcode => {
+          setBarcodeData(barcode);
+
+          if (flashMode) {
+            handleSetFlashMode();
+          }
+        },
         handleSetAnimatedLineHeight: height => setAnimatedLineHeight(height),
         handleSetFlashMode,
       }}>
