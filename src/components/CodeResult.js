@@ -48,12 +48,14 @@ const CodeResult = ({style}) => {
 
   return (
     <Animated.View
-      style={{
-        ...styles.container,
-        ...style,
-        opacity: fadeAnim,
-        translateY: translateYAnim,
-      }}>
+      style={[
+        styles.container,
+        style,
+        {
+          opacity: fadeAnim,
+          translateY: translateYAnim,
+        },
+      ]}>
       <View style={styles.containerInner}>
         <Text style={styles.heading}>Result</Text>
         <View style={styles.content}>

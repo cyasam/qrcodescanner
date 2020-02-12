@@ -1,5 +1,12 @@
 import React, {useContext, useEffect} from 'react';
-import {StyleSheet, Dimensions, Platform, Vibration} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  Platform,
+  Vibration,
+} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 
@@ -20,7 +27,7 @@ const createBarcodeBoundsData = bounds => ({
   y: parseFloat(bounds.origin.y),
 });
 
-const Camera = () => {
+const Camera = ({style}) => {
   const {
     config,
     barcodeData,
@@ -94,37 +101,49 @@ const Camera = () => {
   } else {
     barcodeReadProps.onGoogleVisionBarcodesDetected = onGoogleVisionBarcodesDetected;
   }
-  return (
-    <RNCamera
-      ref={ref => {
-        handleSetCameraRef(ref);
-      }}
-      style={styles.camera}
-      zoom={config.zoom}
-      flashMode={flashMode ? FlashMode.torch : FlashMode.off}
-      captureAudio={false}
-      {...barcodeReadProps}
-      barCodeTypes={[BarCodeType.qr]}
-      androidCameraPermissionOptions={null}>
-      {({status}) => {
-        if (status === 'NOT_AUTHORIZED') {
-          return <PendingView text={config.permissionErrorMessage} />;
-        }
 
-        return (
-          <>
-            <BarcodeMask
-              width={config.barcodeMask.width}
-              height={config.barcodeMask.height}
-              edgeColor={config.barcodeMask.edgeColor}
-              edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
-              animatedLineHeight={animatedLineHeight}
-            />
-            <FlashButton size={24} style={styles.flashButton} />
-          </>
-        );
-      }}
-    </RNCamera>
+  const infoBoxPositionTop = (windowHeight + config.barcodeMask.height) / 2;
+  return (
+    <View style={style}>
+      <RNCamera
+        ref={ref => {
+          handleSetCameraRef(ref);
+        }}
+        style={styles.camera}
+        zoom={config.zoom}
+        flashMode={flashMode ? FlashMode.torch : FlashMode.off}
+        captureAudio={false}
+        {...barcodeReadProps}
+        barCodeTypes={[BarCodeType.qr]}
+        androidCameraPermissionOptions={null}>
+        {({status}) => {
+          if (status === 'NOT_AUTHORIZED') {
+            return <PendingView text={config.permissionErrorMessage} />;
+          }
+
+          return (
+            <>
+              <BarcodeMask
+                style={styles.mask}
+                width={config.barcodeMask.width}
+                height={config.barcodeMask.height}
+                edgeColor={config.barcodeMask.edgeColor}
+                edgeBorderWidth={config.barcodeMask.edgeBorderWidth}
+                animatedLineHeight={animatedLineHeight}
+              />
+
+              <View style={[styles.infoBox, {top: infoBoxPositionTop}]}>
+                <Text style={styles.infoBoxText}>
+                  Place inside QR code in the box
+                </Text>
+              </View>
+
+              <FlashButton size={24} style={styles.flashButton} />
+            </>
+          );
+        }}
+      </RNCamera>
+    </View>
   );
 };
 
@@ -132,6 +151,16 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
     justifyContent: 'center',
+  },
+  infoBox: {
+    position: 'absolute',
+    width: '100%',
+    padding: 10,
+    alignItems: 'center',
+  },
+  infoBoxText: {
+    color: '#fff',
+    fontSize: 15,
   },
   flashButton: {
     position: 'absolute',

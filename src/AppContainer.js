@@ -76,7 +76,7 @@ const AppContainer = () => {
         handleSetFlashMode,
       }}>
       <View style={styles.sectionContainer}>
-        <Camera />
+        <Camera style={styles.camera} />
         {barcodeData && <CodeResult style={styles.codeResult} />}
       </View>
     </AppContext.Provider>
@@ -95,6 +95,9 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 20,
     zIndex: 10,
+  },
+  camera: {
+    flex: 1,
   },
 });
 
